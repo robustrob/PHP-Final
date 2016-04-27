@@ -58,7 +58,7 @@ class User extends Model
             $hash = hash('sha256', $st['u_salt'] . hash('sha256', $password));
 
             if (strcmp($hash, $st['u_pass']) !== 0) // Incorrect password. Redirect to login form.
-                return false; 
+                return 1;
             else // store to session and redirect to home
             {
                 $st = $this->db->select('SELECT u_id, u_first, u_last FROM users WHERE u_name = :username', array(
@@ -69,12 +69,12 @@ class User extends Model
                 $this->store($st); // store to session
                 $this->db->update('users', ['login_ip' => $_SERVER['REMOTE_ADDR']], ' u_id = ' . $st['u_id'] , 'u_id = '.$st['u_id']); // log ip
 
-                return true;
+                return 0;
             }
 
 
         }
-        return false;
+        return 1;
     }
 
     public function createUser($username, $password, $confirm_password, $email, $first, $last)
@@ -138,12 +138,7 @@ class User extends Model
             header("Location: /register/index/4");
 
 
-
-
-
-
-
-
-
     }
+
+
 }

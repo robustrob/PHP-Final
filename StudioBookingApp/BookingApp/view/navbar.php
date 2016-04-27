@@ -20,10 +20,15 @@
     {
         if(strcmp(Session::get('my_user')['first_name'],"admin") == 0)
         {
-            if($page == 'admin')
-                echo '<li role="presentation" class="active" ><a href="/admin">Admin</a></li>';
-            else
-                echo '<li role="presentation"><a href="/admin">Admin</a></li>';
+
+            echo '    <li role="presentation" '. ( $page == 'admin' ? 'class="active"' : '').'class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="/admin" role="button" aria-haspopup="true" aria-expanded="false"> Admin <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/admin" > Admin Panel </a> </li>
+                            <li><a href="/admin/adduser" > Add User</a> </li>
+                            <li><a href="/admin/deleteuser" > Delete User</a> </li>
+                        </ul>
+                     </li>';
         }
         else
         {

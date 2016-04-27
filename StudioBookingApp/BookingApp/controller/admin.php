@@ -21,4 +21,14 @@ class Admin extends Controller
             $this->view('admin/index', []);
         }
     }
+
+    public function adduser()
+    {
+        echo 'add';
+    }
+
+    public function deleteuser()
+    {
+        echo 'delete';
+    }
 }
