@@ -8,9 +8,11 @@
  */
 class Login extends Controller
 {
-    public function index()
+    public function index($error = 0)
     {
-        $this->view('login/index', []);
+        $user = $this->model('User');
+        $e = Errors::getErrors('login',$error);
+        $this->view('login/index', ['error' => $e ]);
     }
 
     public function Authorize()
@@ -19,7 +21,10 @@ class Login extends Controller
         {
             $user = $this->model('User');
 
-            if($user->authenticate($_POST['username'], $_POST['password']))
+            $auth = $user->authenticate($_POST['username'], $_POST['password']);
+
+
+            if($auth == 0)
             {
                 if(strcmp($_POST['username'],"admin") == 0)
                     header("Location: /admin");
@@ -28,7 +33,7 @@ class Login extends Controller
             }
             else
             {
-                header("Location: /login/error");
+                header("Location: /login/index/".$auth);
             }
 
 
@@ -38,7 +43,7 @@ class Login extends Controller
     public function logout()
     {
         Session::destroy();
-        header("Location: /home");
+        header("Location: /home/index/1");
         exit;
     }
 }
