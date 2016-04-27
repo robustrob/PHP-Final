@@ -16,7 +16,7 @@ class Admin extends Controller
         {
             $this->view('admin/index', ['first_name' => Session::get("my_user")['first_name'], 'last_name' => Session::get("my_user")['last_name']  ] );
         }
-        else
+    else
         {
             $this->view('admin/index', []);
         }

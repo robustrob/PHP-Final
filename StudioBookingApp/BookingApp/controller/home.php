@@ -12,7 +12,7 @@ class Home extends Controller
     {
         $calendar = $this->model('Calendar');
 
-        $logout = Errors::getErrors('logout',$logout);
+        $logout = Error::getErrors('logout',$logout);
 
 
 

@@ -11,7 +11,7 @@ class Login extends Controller
     public function index($error = 0)
     {
         $user = $this->model('User');
-        $e = Errors::getErrors('login',$error);
+        $e = Error::getErrors('login',$error);
         $this->view('login/index', ['error' => $e ]);
     }
 

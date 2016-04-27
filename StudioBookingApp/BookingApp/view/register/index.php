@@ -18,10 +18,13 @@
 
     <!-- REGISTRATION FORM -->
     <div class="text-center" style="padding:50px 0">
+
+        <?= $data['error'] ?>
+
         <div class="logo">register</div>
         <!-- Main Form -->
         <div class="login-form-1">
-            <form id="register-form" class="text-left" method="post" action="/register/register">
+            <form id="register-form" class="text-left" method="post" action="/register/RegisterValidation">
                 <div class="login-form-main-message"></div>
                 <div class="main-login-form">
                     <div class="login-group">

@@ -8,26 +8,32 @@
  */
 class Register extends Controller
 {
-    public function index($error = 0)
+    public function index()
     {
+        $error = Session::get('error');
+
+        if($error != false) {
+            $error = Error::getAllErrors($error);
+        }
+        else
+            $error = "";
+
         $this->view('register/index', ['error' => $error]);
+
+        Session::clear('error');
     }
 
-    public function register()
+    public function RegisterValidation()
     {
+        parent::__construct();
+
         if(isset($_POST['register']))
         {
             $user = $this->model('User');
-            $result = $user->createUser($_POST['reg_username'], $_POST['reg_password'], $_POST['reg_password_confirm'], $_POST['reg_email'], $_POST['reg_firstname'], $_POST['reg_lastname']);
+            $error = $user->createUser($_POST['reg_username'], $_POST['reg_password'], $_POST['reg_password_confirm'], $_POST['reg_email'], $_POST['reg_firstname'], $_POST['reg_lastname']);
 
-            if($result == 0)
-            {
-                header("Location: /login");
-            }
-            else
-            {
-                header("Location: /register/index/".$result);
-            }
+            Session::set('error', $error);
+            header("Location: /register/index");
         }
     }
 }
