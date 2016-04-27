@@ -87,56 +87,60 @@ class User extends Model
         $first = strip_tags($first);
         $last = strip_tags($last);
 
-        /*existing Username validation*/
-        $st = $this->db->select('SELECT u_name FROM users WHERE u_name = :username', array(
-            ':username' => $username
-        ));
+        $errors = new Error();
 
-        if($st)
+
+        $st = $this->db->select('SELECT u_name FROM users WHERE u_name = :username', array(':username' => $username));
+
+        $valid = true;
+
+        if(!empty($st))
         {
             //user already exists
-            return 1;
+            $valid = false;
+            $errors->addError('register',1);
         }
 
-        /*existing Email validation*/
+        $st = $this->db->select('SELECT u_email FROM users WHERE u_email = :email', array(':email' => $email));
 
-        $st = $this->db->select('SELECT u_email FROM users WHERE u_email = :email', array(
-            ':email' => $email
-        ));
 
-        if($st)
+        if(!empty($st))
         {
             //e-mail already exists
-            return 2;
+            $valid = false;
+            $errors->addError('register',2);
         }
-
-        /*Matching password validation*/
 
         if(strcmp($password,$confirm_password) != 0)
         {
             // passwords do not match
-            return 3;
+            $valid = false;
+            $errors->addError('register',3);
         }
-        
-        require_once ('../BookingApp/core/Hash.php');
-        $salt = Hash::createSalt();
-        $hashedpw = Hash::hashPassword($password,$salt);
 
 
-        $st = $this->db->insert('users',[ 'u_name' => $username ,
-                                    'u_first' => $first,
-                                    'u_last' => $last,
-                                    'u_pass' => $hashedpw,
-                                    'u_salt' => $salt,
-                                    'u_email' => $email,
-                                    'login_ip' => $_SERVER['REMOTE_ADDR'] ]);
+
+        if($valid == true) {
 
 
-        if($st)
-            header("Location: /login");
-        else
-            header("Location: /register/index/4");
+            require_once('../BookingApp/core/Hash.php');
+            $salt = Hash::createSalt();
+            $hashedpw = Hash::hashPassword($password, $salt);
 
+
+            $st = $this->db->insert('users', ['u_name' => $username,
+                'u_first' => $first,
+                'u_last' => $last,
+                'u_pass' => $hashedpw,
+                'u_salt' => $salt,
+                'u_email' => $email,
+                'login_ip' => $_SERVER['REMOTE_ADDR']]);
+
+
+            $errors->addError('adduser',1);
+        }
+
+        return $errors;
 
     }
 
