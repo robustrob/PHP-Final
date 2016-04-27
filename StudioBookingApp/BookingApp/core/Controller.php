@@ -7,6 +7,7 @@
  */
 
 require_once 'Session.php';
+require_once 'Errors.php';
 
 class Controller {
 

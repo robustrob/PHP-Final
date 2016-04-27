@@ -17,6 +17,9 @@
     <?php require_once '../BookingApp/view/navbar.php' ?>
 
     <div class="text-center" style="padding:50px 0">
+
+        <?= $data['error'] ?>
+
         <div class="logo">login</div>
         <!-- Main Form -->
         <div class="login-form-1">
