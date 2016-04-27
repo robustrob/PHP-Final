@@ -24,11 +24,25 @@ class Admin extends Controller
 
     public function adduser()
     {
-        echo 'add';
+        if(isset(Session::get("my_user")['id']))
+        {
+            $this->view('admin/Adduser', ['first_name' => Session::get("my_user")['first_name'], 'last_name' => Session::get("my_user")['last_name']  ] );
+        }
+        else
+        {
+            $this->view('admin/Adduser', []);
+        }
     }
 
     public function deleteuser()
     {
-        echo 'delete';
+        if(isset(Session::get("my_user")['id']))
+        {
+            $this->view('admin/Deleteuser', ['first_name' => Session::get("my_user")['first_name'], 'last_name' => Session::get("my_user")['last_name']  ] );
+        }
+        else
+        {
+            $this->view('admin/Deleteuser', []);
+        }
     }
 }
