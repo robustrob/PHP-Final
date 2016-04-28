@@ -10,13 +10,7 @@ class Register extends Controller
 {
     public function index()
     {
-        $error = Session::get('error');
-
-        if($error != false) {
-            $error = Error::getAllErrors($error);
-        }
-        else
-            $error = "";
+        $error = Error::getAllErrors();
 
         $this->view('register/index', ['error' => $error]);
 

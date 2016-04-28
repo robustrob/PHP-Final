@@ -17,3 +17,4 @@
 <link href="/assets/css/forms.css" type="text/css" rel="stylesheet"/>
 <link rel="stylesheet" href="/assets/css/main.css">
 <link rel="stylesheet" href="/assets/css/calendar.css">
+<link rel="stylesheet" href="/assets/css/transitions.css">
