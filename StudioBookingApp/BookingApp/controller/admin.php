@@ -8,64 +8,98 @@
  */
 class Admin extends Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+
+        if(Session::get("my_user")['id'] !== 1 && Session::get("my_user")['u_name'] !== 'admin')
+        {
+            echo 'unauthorized.';
+            exit;
+        }
+    }
+
     public function index()
     {
-        $this->view('admin/index', []);
+        /*  Get Errors if any  */
+        $error = Error::getAllErrors();
 
         if(isset(Session::get("my_user")['id']))
         {
-            $this->view('admin/index', ['first_name' => Session::get("my_user")['first_name'], 'last_name' => Session::get("my_user")['last_name']  ] );
+            $this->view('admin/index', ['error' => $error, 'first_name' => Session::get("my_user")['first_name'], 'last_name' => Session::get("my_user")['last_name']  ] );
         }
-    else
-        {
-            $this->view('admin/index', []);
-        }
+
+        Session::clear('error');
+    }
+    //Edit Users
+    /*****************************************************************************************************************/
+
+    public function editusers()
+    {
+        $user = $this->model('User');
+        $users = $user->getAllUsers();
+
+        $error = Error::getAllErrors();
+        $this->view('admin/editusers', ['error' => $error, 'users' => $users, 'first_name' => Session::get("my_user")['first_name'], 'last_name' => Session::get("my_user")['last_name']] );
+        Session::clear('error');
+
     }
 
-    public function adduser()
+    public function AddUser()
     {
-        if(isset(Session::get("my_user")['id']))
+        if(isset($_POST['addUser']))
         {
-            $this->view('admin/Adduser', ['first_name' => Session::get("my_user")['first_name'], 'last_name' => Session::get("my_user")['last_name']] );
-            
-        }
-        else
-        {
-            $this->view('admin/Adduser', []);
-        }
-        
-        if(isset($_POST['adduser']))
-        {
-            // i guess this is the salt :X
-            require_once ('../BookingApp/core/Hash.php');
-            $salt = Hash::createSalt();
-            $hashedpw = Hash::hashPassword($password,$salt);
-            
             $user = $this->model('User');
-            $st = $this->db->insert('users',[ 'u_name' => $_POST['uname'] ,
-                                                'u_first' => $_POST['fname'],
-                                                'u_last' => $_POST['lname'],
-                                                'u_pass' => $_POST['password'],
-                                                'u_email' => $_POST['email'],
-                                                'u_salt' => $salt, // idk where to get the salt from
-                                                'login_ip' => $_SERVER['REMOTE_ADDR'] ]);
-            
+            $error = $user->createUser($_POST['UserName'], $_POST['Password'], $_POST['ConfirmPassword'], $_POST['Email'], $_POST['FirstName'], $_POST['LastName']);
+            Session::set('error', $error);
+            header("Location: /admin/editusers");
         }
-        
     }
 
-    public function deleteuser()
+    public function DeleteUser()
     {
-        if(isset(Session::get("my_user")['id']))
+        if(isset($_POST['deleteUser']))
         {
-            $this->view('admin/Deleteuser', ['first_name' => Session::get("my_user")['first_name'], 'last_name' => Session::get("my_user")['last_name']  ] );
+            $user = $this->model('User');
+            $error = $user->deleteUser($_POST['DeleteUser']);
+            Session::set('error', $error);
+            header("Location: /admin/editusers");
         }
-        else
+    }
+
+    //Edit Availabilities
+    /*****************************************************************************************************************/
+    public function preferences()
+    {
+        $p = $this->model('Preferences');
+
+        $AvailabilityData = $p->getAvailabilities();
+        $rules = $p->getRules();
+
+        $error = Error::getAllErrors();
+        $this->view('admin/preferences',['error' => $error, 'availabilities' => $AvailabilityData, 'rules' => $rules ]);
+        Session::clear('error');
+    }
+
+    public function UpdateAvailabilities()
+    {
+        if(isset($_POST['SaveAvailabilities']))
         {
-            $this->view('admin/Deleteuser', []);
+            $p = $this->model('Preferences');
+            $error = $p->updateAvailabilities($_POST['StartDay'],$_POST['EndDay'],$_POST['StartTime'],$_POST['EndTime']);
+            Session::set('error', $error);
+            header("Location: /admin/preferences");
         }
-        
-        
-        
+    }
+
+    public function UpdateRules()
+    {
+        if(isset($_POST['save']))
+        {
+            $p = $this->model('Preferences');
+            $error = $p->updateRules($_POST['minPayment'],$_POST['maxSessions']);
+            Session::set('error', $error);
+            header("Location: /admin/preferences");
+        }
     }
 }

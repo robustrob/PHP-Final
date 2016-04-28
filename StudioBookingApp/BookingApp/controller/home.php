@@ -8,11 +8,11 @@
  */
 class Home extends Controller
 {
-    public function index($logout = 0)
+    public function index()
     {
         $calendar = $this->model('Calendar');
 
-        $logout = Error::getErrors('logout',$logout);
+        $logout = Error::getAllErrors();
 
 
 
@@ -24,6 +24,8 @@ class Home extends Controller
         {
             $this->view('home/index', ['logout' => $logout]);
         }
+
+        Session::clear('error');
 
     }
 }

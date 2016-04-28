@@ -5,7 +5,7 @@
  * Date: 25/04/2016
  * Time: 7:39 PM
  */
-include '../BookingApp/core/Model.php';
+require_once '../BookingApp/core/Model.php';
 
 class User extends Model
 {
@@ -28,6 +28,7 @@ class User extends Model
     {
         Session::set('my_user', [
             'id' => $st['u_id'],
+            'u_name' => $st['u_name'],
             'first_name' => $st['u_first'],
             'last_name' => $st['u_last']
         ]);
@@ -44,6 +45,7 @@ class User extends Model
         $username = strip_tags($username);
         $password = strip_tags($password);
 
+        $error = new Error();
 
 
         //Search db for user/password and get as array
@@ -58,10 +60,13 @@ class User extends Model
             $hash = hash('sha256', $st['u_salt'] . hash('sha256', $password));
 
             if (strcmp($hash, $st['u_pass']) !== 0) // Incorrect password. Redirect to login form.
-                return 1;
+            {
+                $error->addError('login','invalid-credentials');
+                return array('login' => 1,'error' => $error);
+            }
             else // store to session and redirect to home
             {
-                $st = $this->db->select('SELECT u_id, u_first, u_last FROM users WHERE u_name = :username', array(
+                $st = $this->db->select('SELECT u_id, u_name, u_first, u_last FROM users WHERE u_name = :username', array(
                     ':username' => $username
                 ))[0];
 
@@ -69,12 +74,15 @@ class User extends Model
                 $this->store($st); // store to session
                 $this->db->update('users', ['login_ip' => $_SERVER['REMOTE_ADDR']], ' u_id = ' . $st['u_id'] , 'u_id = '.$st['u_id']); // log ip
 
-                return 0;
+                return array('login' => 0,'error' => $error);
             }
 
 
         }
-        return 1;
+        else {
+            $error->addError('login', 'invalid-credentials');
+            return array('login' => 1,'error' => $error);
+        }
     }
 
     public function createUser($username, $password, $confirm_password, $email, $first, $last)
@@ -98,7 +106,7 @@ class User extends Model
         {
             //user already exists
             $valid = false;
-            $errors->addError('register',1);
+            $errors->addError('register','username-exists');
         }
 
         $st = $this->db->select('SELECT u_email FROM users WHERE u_email = :email', array(':email' => $email));
@@ -108,14 +116,14 @@ class User extends Model
         {
             //e-mail already exists
             $valid = false;
-            $errors->addError('register',2);
+            $errors->addError('register','email-exists');
         }
 
         if(strcmp($password,$confirm_password) != 0)
         {
             // passwords do not match
             $valid = false;
-            $errors->addError('register',3);
+            $errors->addError('register','password-match');
         }
 
 
@@ -137,12 +145,40 @@ class User extends Model
                 'login_ip' => $_SERVER['REMOTE_ADDR']]);
 
 
-            $errors->addError('adduser',1);
+            $errors->addError('adduser','user-added');
         }
 
         return $errors;
 
     }
 
+    public function getAllUsers()
+    {
+        $st = $this->db->select('SELECT u_name FROM users WHERE NOT(u_name = :username) ', ['username' => 'admin'], PDO::FETCH_NUM);
+        return $st;
+    }
 
+    public function deleteUser($username)
+    {
+        $error = new Error();
+
+        if($username == 'admin') {
+            $error->addError('deleteuser', 'not-deleted');
+            return $error;
+        }
+
+        $username = strip_tags(htmlspecialchars($username));
+        $st = $this->db->delete('users',"u_name = '".$username."' ",1);
+
+        if($st)
+        {
+            $error->addError('deleteuser','deleted');
+        }
+        else
+        {
+            $error->addError('deleteuser','not-deleted');
+        }
+
+        return $error;
+    }
 }

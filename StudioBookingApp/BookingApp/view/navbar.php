@@ -25,8 +25,8 @@
                         <a class="dropdown-toggle" data-toggle="dropdown" href="/admin" role="button" aria-haspopup="true" aria-expanded="false"> Admin <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="/admin" > Admin Panel </a> </li>
-                            <li><a href="/admin/adduser" > Add User</a> </li>
-                            <li><a href="/admin/deleteuser" > Delete User</a> </li>
+                            <li><a href="/admin/editusers" > Edit Users</a> </li>
+                            <li><a href="/admin/preferences" > Preferences </a> </li>
                         </ul>
                      </li>';
         }

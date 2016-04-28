@@ -8,11 +8,12 @@
  */
 class Login extends Controller
 {
-    public function index($error = 0)
+    public function index()
     {
         $user = $this->model('User');
-        $e = Error::getErrors('login',$error);
-        $this->view('login/index', ['error' => $e ]);
+        $error = Error::getAllErrors();
+        $this->view('login/index', ['error' => $error ]);
+        Session::clear('error');
     }
 
     public function Authorize()
@@ -24,7 +25,7 @@ class Login extends Controller
             $auth = $user->authenticate($_POST['username'], $_POST['password']);
 
 
-            if($auth == 0)
+            if($auth['login'] == 0)
             {
                 if(strcmp($_POST['username'],"admin") == 0)
                     header("Location: /admin");
@@ -33,7 +34,8 @@ class Login extends Controller
             }
             else
             {
-                header("Location: /login/index/".$auth);
+                Session::set('error', $auth['error']);
+                header("Location: /login/index");
             }
 
 

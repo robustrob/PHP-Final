@@ -46,7 +46,7 @@
 
                         <div class="form-group">
                             <label for="reg_email" class="sr-only">Email</label>
-                            <input type="text" class="form-control" id="reg_email" name="reg_email" placeholder="email" required/>
+                            <input type="email" class="form-control" id="reg_email" name="reg_email" placeholder="email" required/>
                         </div>
                         <div class="form-group">
                             <label for="reg_fullname" class="sr-only">Full Name</label>
